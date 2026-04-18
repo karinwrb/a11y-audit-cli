@@ -31,6 +31,18 @@ function printTextReport(result: AuditResult): void {
   }
 }
 
+/**
+ * Validates that the provided format option is one of the supported values.
+ * Exits the process with an error message if the format is invalid.
+ */
+function validateFormat(format: string): void {
+  const supported = ['json', 'text'];
+  if (!supported.includes(format)) {
+    console.error(chalk.red(`Error: Unsupported format "${format}". Choose one of: ${supported.join(', ')}`));
+    process.exit(2);
+  }
+}
+
 const program = new Command();
 
 program
@@ -43,6 +55,8 @@ program
   .option('-t, --timeout <ms>', 'Page load timeout in milliseconds', '30000')
   .action(async (opts) => {
     try {
+      validateFormat(opts.format);
+
       console.log(chalk.blue(`Auditing ${opts.url}...`));
       const result = await runAudit({
         url: opts.url,
