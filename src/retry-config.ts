@@ -1,10 +1,12 @@
 import { RetryOptions } from './retry';
 
-let retryConfig: RetryOptions = {
+const DEFAULT_RETRY_CONFIG: RetryOptions = {
   maxAttempts: 3,
   delayMs: 500,
   backoffFactor: 2,
 };
+
+let retryConfig: RetryOptions = { ...DEFAULT_RETRY_CONFIG };
 
 export function getRetryConfig(): RetryOptions {
   return { ...retryConfig };
@@ -15,11 +17,7 @@ export function setRetryConfig(overrides: Partial<RetryOptions>): void {
 }
 
 export function resetRetryConfig(): void {
-  retryConfig = {
-    maxAttempts: 3,
-    delayMs: 500,
-    backoffFactor: 2,
-  };
+  retryConfig = { ...DEFAULT_RETRY_CONFIG };
 }
 
 export function isRetryEnabled(): boolean {
