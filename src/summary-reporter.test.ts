@@ -46,6 +46,16 @@ describe('computeSummaryStats', () => {
     expect(stats.minorCount).toBe(1);
     expect(stats.totalViolations).toBe(5);
   });
+
+  it('passedUrls + failedUrls equals totalUrls', () => {
+    const reports = [
+      makeReport(100, []),
+      makeReport(85, ['minor']),
+      makeReport(40, ['critical', 'serious']),
+    ];
+    const stats = computeSummaryStats(reports);
+    expect(stats.passedUrls + stats.failedUrls).toBe(stats.totalUrls);
+  });
 });
 
 describe('formatSummaryText', () => {
