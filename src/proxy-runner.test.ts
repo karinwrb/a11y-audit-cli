@@ -22,6 +22,11 @@ describe('buildProxyAgent', () => {
     expect(agent).not.toBeNull();
     expect(agent).toHaveProperty('proxyUrl', 'http://proxy.example.com:3128');
   });
+
+  it('returns null when url is whitespace only', () => {
+    setProxyConfig({ enabled: true, url: '   ' });
+    expect(buildProxyAgent()).toBeNull();
+  });
 });
 
 describe('applyProxy', () => {
@@ -42,5 +47,12 @@ describe('applyProxy', () => {
     const result = applyProxy({ headers: { 'x-test': '1' }, timeout: 5000 });
     expect(result.headers).toEqual({ 'x-test': '1' });
     expect(result.timeout).toBe(5000);
+  });
+
+  it('does not mutate the original options object', () => {
+    setProxyConfig({ enabled: true, url: 'http://proxy:8080' });
+    const opts = { headers: {} };
+    applyProxy(opts);
+    expect(opts).not.toHaveProperty('agent');
   });
 });
