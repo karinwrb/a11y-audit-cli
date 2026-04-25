@@ -51,3 +51,22 @@ export function clearCache(): void {
     fs.unlinkSync(path.join(CACHE_DIR, file));
   }
 }
+
+/**
+ * Returns cache statistics: total number of entries and count of expired entries.
+ */
+export function getCacheStats(): { total: number; expired: number } {
+  if (!fs.existsSync(CACHE_DIR)) return { total: 0, expired: 0 };
+
+  const files = fs.readdirSync(CACHE_DIR).filter((f) => f.endsWith('.json'));
+  let expired = 0;
+
+  for (const file of files) {
+    const stat = fs.statSync(path.join(CACHE_DIR, file));
+    if (Date.now() - stat.mtimeMs > CACHE_TTL_MS) {
+      expired++;
+    }
+  }
+
+  return { total: files.length, expired };
+}
