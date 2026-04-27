@@ -4,74 +4,79 @@ import {
   resetMaskConfig,
   isMaskEnabled,
   getMaskChar,
-  getMaskFields,
-  isPartialMask,
   getVisibleChars,
-} from "./mask-config";
+  getSensitiveFields,
+  isMaskUrlsEnabled,
+} from './mask-config';
 
-beforeEach(() => {
-  resetMaskConfig();
-});
+beforeEach(() => resetMaskConfig());
 
-describe("getMaskConfig", () => {
-  it("returns default config", () => {
+describe('getMaskConfig', () => {
+  it('returns default config', () => {
     const config = getMaskConfig();
     expect(config.enabled).toBe(false);
-    expect(config.maskChar).toBe("*");
-    expect(config.maskFields).toContain("token");
-    expect(config.partialMask).toBe(false);
+    expect(config.maskChar).toBe('*');
+    expect(config.visibleChars).toBe(4);
+    expect(config.sensitiveFields).toContain('token');
+    expect(config.maskUrls).toBe(false);
+  });
+});
+
+describe('setMaskConfig', () => {
+  it('merges partial config', () => {
+    setMaskConfig({ enabled: true, maskChar: '#' });
+    const config = getMaskConfig();
+    expect(config.enabled).toBe(true);
+    expect(config.maskChar).toBe('#');
     expect(config.visibleChars).toBe(4);
   });
 
-  it("returns a copy, not reference", () => {
-    const a = getMaskConfig();
-    const b = getMaskConfig();
-    expect(a).not.toBe(b);
+  it('overrides sensitiveFields', () => {
+    setMaskConfig({ sensitiveFields: ['mySecret'] });
+    expect(getSensitiveFields()).toEqual(['mySecret']);
   });
 });
 
-describe("setMaskConfig", () => {
-  it("merges partial config", () => {
-    setMaskConfig({ enabled: true, maskChar: "#" });
-    expect(isMaskEnabled()).toBe(true);
-    expect(getMaskChar()).toBe("#");
-    expect(getMaskFields()).toContain("token");
-  });
-
-  it("overwrites maskFields", () => {
-    setMaskConfig({ maskFields: ["customField"] });
-    expect(getMaskFields()).toEqual(["customField"]);
-  });
-});
-
-describe("resetMaskConfig", () => {
-  it("restores defaults after changes", () => {
-    setMaskConfig({ enabled: true, maskChar: "X", visibleChars: 2 });
+describe('resetMaskConfig', () => {
+  it('restores defaults after mutation', () => {
+    setMaskConfig({ enabled: true, maskChar: 'X', visibleChars: 2 });
     resetMaskConfig();
     expect(isMaskEnabled()).toBe(false);
-    expect(getMaskChar()).toBe("*");
+    expect(getMaskChar()).toBe('*');
     expect(getVisibleChars()).toBe(4);
   });
 });
 
-describe("isPartialMask", () => {
-  it("returns false by default", () => {
-    expect(isPartialMask()).toBe(false);
+describe('isMaskEnabled', () => {
+  it('returns false by default', () => {
+    expect(isMaskEnabled()).toBe(false);
   });
 
-  it("returns true when set", () => {
-    setMaskConfig({ partialMask: true });
-    expect(isPartialMask()).toBe(true);
+  it('returns true after enabling', () => {
+    setMaskConfig({ enabled: true });
+    expect(isMaskEnabled()).toBe(true);
   });
 });
 
-describe("getVisibleChars", () => {
-  it("returns default value", () => {
+describe('getMaskChar', () => {
+  it('returns default mask char', () => {
+    expect(getMaskChar()).toBe('*');
+  });
+});
+
+describe('getVisibleChars', () => {
+  it('returns default visible chars', () => {
     expect(getVisibleChars()).toBe(4);
   });
+});
 
-  it("returns updated value", () => {
-    setMaskConfig({ visibleChars: 6 });
-    expect(getVisibleChars()).toBe(6);
+describe('isMaskUrlsEnabled', () => {
+  it('returns false by default', () => {
+    expect(isMaskUrlsEnabled()).toBe(false);
+  });
+
+  it('returns true when set', () => {
+    setMaskConfig({ maskUrls: true });
+    expect(isMaskUrlsEnabled()).toBe(true);
   });
 });

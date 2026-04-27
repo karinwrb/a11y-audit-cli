@@ -1,21 +1,17 @@
-/**
- * Configuration for masking sensitive data in audit results and reports.
- */
-
 export interface MaskConfig {
   enabled: boolean;
-  maskChar: string;
-  maskFields: string[];
-  partialMask: boolean;
-  visibleChars: number;
+  maskChar?: string;
+  visibleChars?: number;
+  sensitiveFields?: string[];
+  maskUrls?: boolean;
 }
 
 const DEFAULT_CONFIG: MaskConfig = {
   enabled: false,
-  maskChar: "*",
-  maskFields: ["password", "token", "secret", "apiKey", "authorization"],
-  partialMask: false,
+  maskChar: '*',
   visibleChars: 4,
+  sensitiveFields: ['token', 'password', 'secret', 'apiKey', 'authorization'],
+  maskUrls: false,
 };
 
 let currentConfig: MaskConfig = { ...DEFAULT_CONFIG };
@@ -37,17 +33,17 @@ export function isMaskEnabled(): boolean {
 }
 
 export function getMaskChar(): string {
-  return currentConfig.maskChar;
-}
-
-export function getMaskFields(): string[] {
-  return [...currentConfig.maskFields];
-}
-
-export function isPartialMask(): boolean {
-  return currentConfig.partialMask;
+  return currentConfig.maskChar ?? '*';
 }
 
 export function getVisibleChars(): number {
-  return currentConfig.visibleChars;
+  return currentConfig.visibleChars ?? 4;
+}
+
+export function getSensitiveFields(): string[] {
+  return currentConfig.sensitiveFields ?? [];
+}
+
+export function isMaskUrlsEnabled(): boolean {
+  return currentConfig.maskUrls ?? false;
 }
