@@ -58,9 +58,21 @@ describe('trace-config', () => {
     expect(getTraceIdHeader()).toBe('X-Custom-Trace');
   });
 
+  it('getTraceIdHeader should return default header name when not overridden', () => {
+    expect(getTraceIdHeader()).toBe('X-Trace-Id');
+  });
+
   it('getTraceConfig should return a copy, not a reference', () => {
     const config = getTraceConfig();
     config.enabled = true;
     expect(isTraceEnabled()).toBe(false);
+  });
+
+  it('setTraceConfig should preserve unspecified fields', () => {
+    setTraceConfig({ enabled: true });
+    setTraceConfig({ includeHeaders: true });
+    expect(isTraceEnabled()).toBe(true);
+    expect(isHeadersTraced()).toBe(true);
+    expect(isTimingsEnabled()).toBe(true);
   });
 });
