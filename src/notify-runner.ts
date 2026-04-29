@@ -29,7 +29,16 @@ export function sendWebhook(webhookUrl: string, payload: NotifyPayload): Promise
     const req = lib.request(
       { hostname: parsed.hostname, port: parsed.port, path: parsed.pathname, method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) } },
-      res => { res.resume(); res.on('end', resolve); }
+      res => {
+        res.resume();
+        res.on('end', () => {
+          if (res.statusCode && res.statusCode >= 400) {
+            reject(new Error(`Webhook request failed with status ${res.statusCode}`));
+          } else {
+            resolve();
+          }
+        });
+      }
     );
     req.on('error', reject);
     req.write(body);
