@@ -42,3 +42,19 @@ export function injectAuth(url: string): { url: string; headers: RequestHeaders 
     headers: buildAuthHeaders(),
   };
 }
+
+/**
+ * Returns true if any authentication method is configured and enabled.
+ * Useful for logging or conditional behaviour in the audit runner.
+ */
+export function isAuthConfigured(): boolean {
+  const config = getAuthConfig();
+  if (!config.enabled) return false;
+
+  return !!(
+    config.bearerToken ||
+    (config.username && config.password) ||
+    config.customHeaders ||
+    (config.apiKey && config.apiKeyParam)
+  );
+}
